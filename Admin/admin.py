@@ -7,7 +7,7 @@ import uuid
 s3_client = boto3.client("s3", region_name='eu-north-1')
 
 
-BUCKET_NAME = os.getenv("health-analysis-pdf-report")
+BUCKET_NAME = os.getenv("BUCKET_NAME")
 
 ## Bedrock
 from langchain_aws.embeddings import BedrockEmbeddings
