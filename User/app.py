@@ -5,7 +5,10 @@ import uuid
 
 ## s3_client
 s3_client = boto3.client("s3")
-BUCKET_NAME = os.getenv("BUCKET_NAME")
+BUCKET_NAME = os.environ.get("BUCKET_NAME")
+print(f"BUCKET_NAME is: {BUCKET_NAME}")
+if BUCKET_NAME is None:
+    raise ValueError("BUCKET_NAME environment variable not set")
 
 ## Bedrock
 from langchain_community.embeddings import BedrockEmbeddings

@@ -4,8 +4,10 @@ import os
 import uuid
 
 ## s3_client
-s3_client = boto3.client("s3")
-BUCKET_NAME = os.getenv("BUCKET_NAME")
+s3_client = boto3.client("s3", region_name='eu-north-1')
+
+
+BUCKET_NAME = os.getenv("health-analysis-pdf-report")
 
 ## Bedrock
 from langchain_community.embeddings import BedrockEmbeddings
@@ -20,7 +22,7 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import FAISS
 
 bedrock_client = boto3.client(service_name="bedrock-runtime")
-bedrock_embeddings = BedrockEmbeddings(model_id="amazon.titan-embed-text-v1", client=bedrock_client)
+bedrock_embeddings = BedrockEmbeddings(model_id="amazon.titan-embed-text-v2:0", client=bedrock_client)
 
 def get_unique_id():
     return str(uuid.uuid4())
