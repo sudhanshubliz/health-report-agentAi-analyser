@@ -10,7 +10,7 @@ s3_client = boto3.client("s3", region_name='eu-north-1')
 BUCKET_NAME = os.getenv("health-analysis-pdf-report")
 
 ## Bedrock
-from langchain_community.embeddings import BedrockEmbeddings
+from langchain_aws.embeddings import BedrockEmbeddings
 
 ## Text Splitter
 from langchain.text_splitter import RecursiveCharacterTextSplitter
