@@ -58,5 +58,3 @@ Run ADMIN application:
 
 ## Youtube
 I have created a Youtube video for this tutorials with step-by-step hands-on coding.
-
-[![Chat With PDF - Generative AI Application](https://i9.ytimg.com/vi/KFibP7KnDVM/mqdefault.jpg?v=66342224&sqp=CKzU0LEG&rs=AOn4CLASIjZrAdMHdLjZjWOnwM4a7gvQnA)](https://www.youtube.com/watch?v=KFibP7KnDVM)
