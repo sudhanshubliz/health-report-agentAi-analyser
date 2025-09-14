@@ -1,7 +1,9 @@
 import boto3
 import streamlit as st
-import os
 import uuid
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
 
 ## s3_client
 s3_client = boto3.client("s3")
@@ -11,8 +13,8 @@ if BUCKET_NAME is None:
     raise ValueError("BUCKET_NAME environment variable not set")
 
 ## Bedrock
-from langchain_community.embeddings import BedrockEmbeddings
-from langchain.llms.bedrock import Bedrock
+from langchain_aws.embeddings import BedrockEmbeddings
+from langchain_community.chat_models import BedrockChat
 
 ## prompt and chain
 from langchain.prompts import PromptTemplate
@@ -26,10 +28,20 @@ from langchain_community.document_loaders import PyPDFLoader
 
 ## import FAISS
 from langchain_community.vectorstores import FAISS
+from langchain_aws import BedrockEmbeddings
 
-bedrock_client = boto3.client(service_name="bedrock-runtime")
-bedrock_embeddings = BedrockEmbeddings(model_id="amazon.titan-embed-text-v2:0", client=bedrock_client)
+session = boto3.Session(
+    aws_access_key_id="AKIAWMN3TUK55UMGDIOU",
+    aws_secret_access_key="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",
+    region_name="us-east-1"
+)
 
+bedrock_client = session.client("bedrock-runtime")
+
+bedrock_embeddings = BedrockEmbeddings(
+    model_id="amazon.titan-embed-text-v2:0",  # <-- change this
+    client=bedrock_client
+)
 folder_path="/tmp/"
 
 def get_unique_id():
@@ -41,8 +53,8 @@ def load_index():
     s3_client.download_file(Bucket=BUCKET_NAME, Key="my_faiss.pkl", Filename=f"{folder_path}my_faiss.pkl")
 
 def get_llm():
-    llm=Bedrock(model_id="anthropic.claude-v2:1", client=bedrock_client,
-                model_kwargs={'max_tokens_to_sample': 512})
+    llm=BedrockChat(model_id="arn:aws:bedrock:us-east-1:439016989371:inference-profile/us.anthropic.claude-3-5-haiku-20241022-v1:0", client=bedrock_client,
+                    provider="anthropic", model_kwargs={"max_tokens": 512})
     return llm
 
 # get_response()
@@ -73,7 +85,7 @@ def get_response(llm,vectorstore, question ):
     return_source_documents=True,
     chain_type_kwargs={"prompt": PROMPT}
 )
-    answer=qa({"query":question})
+    answer = qa.invoke({"query": question})
     return answer['result']
 
 
