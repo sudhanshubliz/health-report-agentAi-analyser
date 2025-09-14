@@ -91,13 +91,16 @@ def get_response(llm,vectorstore, question ):
 
 ## main method
 def main():
-    st.header("This is Client Site for Chat with PDF demo using Bedrock, RAG etc")
+    st.header(""" Blood Report 🩸Analysis & Lifestyle Guidance Agent AI ⛑️
+              Client Site for Chat with sample PDF uploaded by admin in s3 bucket. 
+              Technology used Amazon Bedrock,S3 Bucket,Anthropic Claude 3.5 Haiku LLM, RAG,
+              streamlit, pypdf, langchain-aws, faiss-cpu, boto3 etc.""")
 
     load_index()
 
     dir_list = os.listdir(folder_path)
-    st.write(f"Files and Directories in {folder_path}")
-    st.write(dir_list)
+   # st.write(f"Files and Directories in {folder_path}")
+    #st.write(dir_list)
 
     ## create index
     faiss_index = FAISS.load_local(
