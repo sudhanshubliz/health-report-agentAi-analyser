@@ -8,6 +8,11 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 ## s3_client
 s3_client = boto3.client("s3")
 BUCKET_NAME = os.environ.get("BUCKET_NAME")
+
+AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
+
+
 print(f"BUCKET_NAME is: {BUCKET_NAME}")
 if BUCKET_NAME is None:
     raise ValueError("BUCKET_NAME environment variable not set")
@@ -31,7 +36,8 @@ from langchain_community.vectorstores import FAISS
 from langchain_aws import BedrockEmbeddings
 
 session = boto3.Session(
-
+    aws_access_key_id={AWS_ACCESS_KEY_ID},
+    aws_secret_access_key={AWS_SECRET_ACCESS_KEY},
     region_name="us-east-1"
 )
 
