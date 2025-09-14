@@ -31,8 +31,7 @@ from langchain_community.vectorstores import FAISS
 from langchain_aws import BedrockEmbeddings
 
 session = boto3.Session(
-    aws_access_key_id="AKIAWMN3TUK55UMGDIOU",
-    aws_secret_access_key="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",
+
     region_name="us-east-1"
 )
 
