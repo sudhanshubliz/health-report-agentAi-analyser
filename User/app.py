@@ -30,10 +30,14 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import FAISS
 from langchain_aws import BedrockEmbeddings
 
+# Load credentials from environment variables
+key_id = os.getenv("AWS_ACCESS_KEY_ID")
+access_key = os.getenv("AWS_SECRET_ACCESS_KEY")
+
 session = boto3.Session(
-    aws_access_key_id=os.environ.get("AWS_ACCESS_KEY_ID"),
-aws_secret_access_key=os.environ.get("AWS_SECRET_ACCESS_KEY"),
-    region_name="us-east-1"
+    aws_access_key_id=key_id,
+    aws_secret_access_key=access_key,
+    region_name="eu-north-1"
 )
 
 bedrock_client = session.client("bedrock-runtime")
