@@ -43,7 +43,10 @@ session = boto3.Session(
     region_name="us-east-1"
 )
 
-bedrock_client = session.client("bedrock-runtime")
+bedrock_client = boto3.client(
+    service_name="bedrock-runtime",
+    region_name="us-east-1"   # or your actual Bedrock region
+)
 
 bedrock_embeddings = BedrockEmbeddings(
     model_id="amazon.titan-embed-text-v2:0",  # <-- change this
