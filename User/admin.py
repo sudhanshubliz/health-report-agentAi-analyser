@@ -49,7 +49,13 @@ def create_vector_store(request_id, documents):
 
 ## main method
 def main():
-    st.write("This is Admin Site for Chat with PDF demo")
+    with st.container():
+        col1, col2 = st.columns([1, 5])
+        with col1:
+            st.image("https://img.icons8.com/color/48/medical-doctor.png", width=80)
+        with col2:
+            st.markdown("### Please upload the latest **blood report** for AI analysis")
+            st.caption("⏳ Wait a moment while uploading...")
     uploaded_file = st.file_uploader("Choose a file", "pdf")
     if uploaded_file is not None:
         request_id = get_unique_id()

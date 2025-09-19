@@ -2,6 +2,9 @@ import boto3
 import streamlit as st
 import uuid
 import os
+import admin
+
+
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 
@@ -95,11 +98,20 @@ def get_response(llm,vectorstore, question ):
 
 ## main method
 def main():
-    st.header(""" Blood Report 🩸Analysis & Lifestyle Guidance Agent AI ⛑️
-              Client Site for Chat with sample PDF uploaded by admin in s3 bucket. 
-              Technology used Amazon Bedrock,S3 Bucket,Anthropic Claude 3.5 Haiku LLM, RAG,
-              streamlit, pypdf, langchain-aws, faiss-cpu, boto3 etc.""")
+    with st.container():
+        st.markdown(
+            """
+            <div style="padding:20px; border-radius:15px; background-color:#f0f9ff; 
+                        border:2px solid #cce5ff; text-align:center;">
+                <h2 style="color:#004085; margin:0;">
+                    🩸 Blood Report Analysis & Lifestyle Guidance Agent AI ⛑️
+                </h2>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
+    admin.main()
     load_index()
 
     dir_list = os.listdir(folder_path)
@@ -115,15 +127,25 @@ def main():
     )
 
     st.write("INDEX IS READY")
-    question = st.text_input("Please ask your question")
-    if st.button("Ask Question"):
-        with st.spinner("Querying..."):
+    with st.container():
+        st.markdown(
+            """
+            <div style="padding:15px; border-radius:12px; background-color:#f8f9fa; border:1px solid #ddd;">
+                <h4 style="margin:0;">💬 Ask Your Question</h4>
+                <p style="color:#555; margin-bottom:10px;">Type your query below and let AI assist you.</p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+    question = st.text_input("")
+    if st.button("🚀 Ask Question"):
+        with st.spinner("🤖 Querying AI... please wait"):
 
             llm = get_llm()
 
             # get_response
             st.write(get_response(llm, faiss_index, question))
-            st.success("Done")
+            st.success("Answer received ✅")
 
 if __name__ == "__main__":
     main()
