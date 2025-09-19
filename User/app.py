@@ -37,7 +37,7 @@ access_key = os.getenv("AWS_SECRET_ACCESS_KEY")
 session = boto3.Session(
     aws_access_key_id=key_id,
     aws_secret_access_key=access_key,
-    region_name="eu-north-1"
+    region_name="us-east-1"
 )
 
 bedrock_client = session.client("bedrock-runtime")
