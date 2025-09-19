@@ -135,8 +135,17 @@ def main():
             """
             <div style="padding:15px; border-radius:12px; background-color:#f8f9fa; border:1px solid #ddd;">
                 <h4 style="margin:0;">💬 Ask Your Question</h4>
-                <p style="color:#555; margin-bottom:10px;">Type your query below and let AI assist you.</p>
-            </div>
+                <p style="color:#555; margin-bottom:10px;">Type your query below and let AI assist you.      </p>
+         <h4 style="margin:0;">💬 Example...</h4>
+           <p style="color:#555; margin-bottom:10px;">     What health parameters are analyzed in this report?  </p>
+<p style="color:#555; margin-bottom:10px;">What are the key findings from the latest health tests?  </p>
+<p style="color:#555; margin-bottom:10px;"> How do the current test results compare to previous test results?  </p>
+<p style="color:#555; margin-bottom:10px;"> Are there any health concerns or areas that need attention?  </p>
+<p style="color:#555; margin-bottom:10px;"> What recommendations are provided for physical activity and diet?  </p>
+<p style="color:#555; margin-bottom:10px;"> Can you explain the stress management suggestions?  </p>
+<p style="color:#555; margin-bottom:10px;"> What is the significance of the different test results like TSH, Iron, Cholesterol, etc.?  </p>
+ 
+            
             """,
             unsafe_allow_html=True
         )
