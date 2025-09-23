@@ -18,6 +18,9 @@ In this hands-on tutorial, we will demonstrate the following:
 ## Architecture
 ![image info](./Bedrock-ChatWithPdf.png)
 
+![image info](./diagram.jpeg)
+
+
 ## ADMIN Application:
     - Build Admin Web application where AdminUser can upload the pdf.
     - The PDF text is split into chunks
