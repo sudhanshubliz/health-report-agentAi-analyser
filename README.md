@@ -58,6 +58,3 @@ Run ADMIN application:
 
 #### Note: The docker volume mount is only needed in local. If you are running the container in ECS, or EKS, the iam role is used.
 
-
-## Youtube
-I have created a Youtube video for this tutorials with step-by-step hands-on coding.
