@@ -4,8 +4,8 @@ Health  report AI analyser
 # Chat With PDF - Generative AI Application
 ## Built Using Amazon Bedrock, Langchain, Python, Docker, Amazon S3
 ## Models used:
-    Amazon Titan Embedding G1 - Text
-    Anthropic Claude 2.1
+    Amazon.titan-embed-text-v2:0 - Text
+    Anthropic.Claude-3-5-haiku
 
 ## Introduction
 In this video we will build a CHATBOT like application with AWS Amazon Bedrock, docker, python, Langchain, and Streamlit. We will use Retrieval-Augmented generation concept to provide context to the Large Language model along with user query to generate response from our Knowledgebase.
