@@ -12,7 +12,7 @@ In this video we will build a CHATBOT like application with AWS Amazon Bedrock, 
 
 In this hands-on tutorial, we will demonstrate the following:
 - Architecture of the applications
-- Build 2 applications (ADMIN and USER) and create DOCKER images
+- Build a applications (ADMIN and USER) and create DOCKER images
 
 
 ## Architecture
