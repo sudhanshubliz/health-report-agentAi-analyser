@@ -8,7 +8,7 @@ Health  report AI analyser
     Anthropic.Claude-3-5-haiku
 
 ## Introduction
-In this video we will build a CHATBOT like application with AWS Amazon Bedrock, docker, python, Langchain, and Streamlit. We will use Retrieval-Augmented generation concept to provide context to the Large Language model along with user query to generate response from our Knowledgebase.
+We will build a CHATBOT like application with AWS Amazon Bedrock, docker, python, Langchain, and Streamlit. We will use Retrieval-Augmented generation concept to provide context to the Large Language model along with user query to generate response from our Knowledgebase.
 
 In this hands-on tutorial, we will demonstrate the following:
 - Architecture of the applications
