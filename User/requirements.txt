@@ -5,3 +5,4 @@ boto3
 langchain-community
 pypdf
 langchain
+langchain-text-splitters>=0.2.0

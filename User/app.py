@@ -24,7 +24,7 @@ from langchain.prompts import PromptTemplate
 from langchain.chains import RetrievalQA
 
 ## Text Splitter
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 ## Pdf Loader
 from langchain_community.document_loaders import PyPDFLoader
