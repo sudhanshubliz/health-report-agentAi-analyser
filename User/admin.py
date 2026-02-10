@@ -13,8 +13,6 @@ BUCKET_NAME = os.getenv("BUCKET_NAME")
 from langchain_aws.embeddings import BedrockEmbeddings
 
 ## Text Splitter
-#from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_aws.embeddings import BedrockEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 ## Pdf Loader

@@ -1,22 +1,6 @@
-# Core
-streamlit==1.54.0
-
-# LangChain (OLD ecosystem - compatible)
-langchain==0.1.20
-langchain-community==0.0.38
-langchain-aws==0.0.12
-
-# ML / Vector
+streamlit
+langchain-aws
 faiss-cpu
-numpy
-pandas
-
-# AWS
 boto3
-
-# PDF
+langchain-community
 pypdf
-
-# Utils
-python-dotenv
-requests
