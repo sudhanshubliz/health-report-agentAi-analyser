@@ -16,7 +16,6 @@ if BUCKET_NAME is None:
     raise ValueError("BUCKET_NAME environment variable not set")
 
 ## Bedrock
-from langchain_aws.embeddings import BedrockEmbeddings
 from langchain_community.chat_models import BedrockChat
 
 ## prompt and chain
