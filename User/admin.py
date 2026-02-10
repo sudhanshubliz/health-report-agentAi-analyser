@@ -14,6 +14,8 @@ from langchain_aws.embeddings import BedrockEmbeddings
 
 ## Text Splitter
 #from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_aws.embeddings import BedrockEmbeddings
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 ## Pdf Loader
 from langchain_community.document_loaders import PyPDFLoader
