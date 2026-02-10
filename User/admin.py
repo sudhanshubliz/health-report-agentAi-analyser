@@ -21,6 +21,33 @@ bedrock_client = boto3.client(
     service_name="bedrock-runtime",
     region_name="us-east-1"   # or your actual Bedrock region
 )
+import json
+import boto3
+from langchain.embeddings.base import Embeddings
+
+
+class BedrockEmbeddingWrapper(Embeddings):
+    def __init__(self, region="us-east-1", model_id="amazon.titan-embed-text-v1"):
+        self.client = boto3.client("bedrock-runtime", region_name=region)
+        self.model_id = model_id
+
+    def embed_documents(self, texts):
+        return [self.embed_query(t) for t in texts]
+
+    def embed_query(self, text):
+        body = {
+            "inputText": text
+        }
+
+        response = self.client.invoke_model(
+            modelId=self.model_id,
+            body=json.dumps(body),
+            contentType="application/json",
+            accept="application/json"
+        )
+
+        result = json.loads(response["body"].read())
+        return result["embedding"]
 
 bedrock_embeddings = BedrockEmbeddingWrapper(model_id="amazon.titan-embed-text-v2:0", client=bedrock_client)
 
