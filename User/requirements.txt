@@ -4,3 +4,4 @@ faiss-cpu
 boto3
 langchain-community
 pypdf
+langchain
