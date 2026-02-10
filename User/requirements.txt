@@ -1,6 +1,12 @@
-streamlit
-langchain-aws
-faiss-cpu
+streamlit==1.54.0
+
+langchain==0.1.20
+langchain-community==0.0.38
+
 boto3
-langchain-community
+faiss-cpu
+numpy
+pandas
 pypdf
+python-dotenv
+requests
