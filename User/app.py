@@ -3,6 +3,7 @@ import streamlit as st
 import uuid
 import os
 import admin
+from admin import BedrockEmbeddingWrapper
 
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
@@ -30,7 +31,6 @@ from langchain_community.document_loaders import PyPDFLoader
 
 ## import FAISS
 from langchain_community.vectorstores import FAISS
-from langchain_aws import BedrockEmbeddings
 
 # Load credentials from environment variables
 key_id = os.getenv("AWS_ACCESS_KEY_ID")
@@ -47,7 +47,7 @@ bedrock_client = boto3.client(
     region_name="us-east-1"   # or your actual Bedrock region
 )
 
-bedrock_embeddings = BedrockEmbeddings(
+bedrock_embeddings = BedrockEmbeddingWrapper(
     model_id="amazon.titan-embed-text-v2:0",  # <-- change this
     client=bedrock_client
 )
