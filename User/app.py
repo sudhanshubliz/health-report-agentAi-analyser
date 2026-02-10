@@ -20,11 +20,15 @@ from langchain_aws.embeddings import BedrockEmbeddings
 from langchain_community.chat_models import BedrockChat
 
 ## prompt and chain
-from langchain_core.prompts import PromptTemplate
+
+from langchain.prompts import PromptTemplate
+from langchain.chains import RetrievalQA
+#from langchain.text_splitter import RecursiveCharacterTextSplitter
+
 from langchain.chains.retrieval_qa.base import RetrievalQA
 
 ## Text Splitter
-from langchain_text_splitters import RecursiveCharacterTextSplitter
+#from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 ## Pdf Loader
 from langchain_community.document_loaders import PyPDFLoader
