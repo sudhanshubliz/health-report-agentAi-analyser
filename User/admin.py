@@ -27,8 +27,20 @@ from langchain.embeddings.base import Embeddings
 
 
 class BedrockEmbeddingWrapper(Embeddings):
-    def __init__(self, region="us-east-1", model_id="amazon.titan-embed-text-v1"):
-        self.client = boto3.client("bedrock-runtime", region_name=region)
+    def __init__(
+            self,
+            client=None,
+            region="us-east-1",
+            model_id="amazon.titan-embed-text-v1"
+    ):
+        if client:
+            self.client = client
+        else:
+            self.client = boto3.client(
+                "bedrock-runtime",
+                region_name=region
+            )
+
         self.model_id = model_id
 
     def embed_documents(self, texts):
