@@ -24,10 +24,7 @@ from langchain_community.chat_models import BedrockChat
 from langchain.prompts import PromptTemplate
 from langchain.chains import RetrievalQA
 
-from langchain.chains.retrieval_qa.base import RetrievalQA
-
 ## Text Splitter
-#from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 ## Pdf Loader
 from langchain_community.document_loaders import PyPDFLoader
