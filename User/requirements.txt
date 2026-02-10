@@ -1,9 +1,9 @@
 streamlit
-langchain-aws
 faiss-cpu
 boto3
-langchain-community
 pypdf
+pandas
+numpy
+
+python-dotenv
 langchain==0.1.20
-langchain-text-splitters>=0.2.0
-langchain-core
