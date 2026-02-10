@@ -1,6 +1,21 @@
 # Health-report-agentAi-analyser
-Health  report AI analyser
+Health report AI analyser
 
+## 📌 Project Purpose
+
+```
+Healthcare reports are often difficult to understand for non-medical users.
+This project aims to bridge the gap between medical data and human understanding using Artificial Intelligence.
+
+It helps users:
+
+✅ Understand blood test results
+✅ Detect abnormal health indicators
+✅ Ask medical questions in simple language
+✅ Receive lifestyle & diet guidance
+✅ Support doctors in clinical decisions
+✅ Enable medical research & education
+```
 # Chat With PDF - Generative AI Application
 ## Built Using Amazon Bedrock, Langchain, Python, Docker, Amazon S3
 ## Models used:
@@ -15,11 +30,32 @@ In this hands-on tutorial, we will demonstrate the following:
 - Build a applications (ADMIN and USER) and create DOCKER images
 
 
-## Architecture
+## 🏗️  System Architecture
 ![image info](./Bedrock-ChatWithPdf.png)
 
 ![image info](./diagram.jpeg)
 
+```
+User Interface (Streamlit) ↓
+PDF Report Processor ↓
+AI Engine (LLM + RAG)↓
+Vector Database (FAISS)↓
+Cloud / Storage (AWS / Local)
+```
+
+## Quickstart
+
+```bash
+pip install -r requirements.txt
+streamlit run admin.py
+streamlit run app.py
+
+```
+
+# Streamlit link
+```
+https://health-report-agentai-analyser.streamlit.app/
+```
 
 ## ADMIN Application:
     - Build Admin Web application where AdminUser can upload the pdf.
