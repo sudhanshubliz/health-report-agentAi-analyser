@@ -1,0 +1,12 @@
+streamlit==1.54.0
+
+langchain==0.1.20
+langchain-community==0.0.38
+
+boto3
+faiss-cpu
+numpy
+pandas
+pypdf
+python-dotenv
+requests
