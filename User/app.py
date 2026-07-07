@@ -40,6 +40,7 @@ def get_llm():
 
     return HuggingFaceHub(
         repo_id=HF_LLM_REPO_ID,
+        task="text-generation",
         huggingfacehub_api_token=HF_API_TOKEN,
         model_kwargs={
             "temperature": 0.1,
@@ -106,7 +107,7 @@ def render_question_box(faiss_index):
                 st.write(get_response(llm, faiss_index, question.strip()))
                 st.success("Answer received ✅")
             except ValueError as exc:
-                st.error(f"{exc}. Add HUGGINGFACEHUB_API_TOKEN or HF_TOKEN to Streamlit secrets.")
+                st.error(f"Hugging Face configuration error: {exc}")
             except Exception as exc:
                 st.error(f"Error while querying Hugging Face: {exc}")
 
