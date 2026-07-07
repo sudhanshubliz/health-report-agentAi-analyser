@@ -22,10 +22,23 @@ def get_config(name, default=None):
         return default
 
 
+def normalize_r2_endpoint_url(endpoint_url, bucket_name=None):
+    if not endpoint_url:
+        return endpoint_url
+
+    endpoint_url = endpoint_url.rstrip("/")
+    if bucket_name:
+        bucket_suffix = "/" + bucket_name.strip("/")
+        if endpoint_url.endswith(bucket_suffix):
+            endpoint_url = endpoint_url[: -len(bucket_suffix)]
+
+    return endpoint_url
+
+
 AWS_REGION = get_config("AWS_REGION", "us-east-1")
 S3_REGION = get_config("AWS_S3_REGION", "eu-north-1")
-R2_ENDPOINT_URL = get_config("R2_ENDPOINT_URL")
 BUCKET_NAME = get_config("R2_BUCKET_NAME") or get_config("BUCKET_NAME")
+R2_ENDPOINT_URL = normalize_r2_endpoint_url(get_config("R2_ENDPOINT_URL"), BUCKET_NAME)
 STORAGE_PROVIDER = "Cloudflare R2" if R2_ENDPOINT_URL else "Amazon S3"
 
 
