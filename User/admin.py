@@ -1,14 +1,12 @@
-import json
 import os
 import tempfile
 import uuid
 
 import boto3
 import streamlit as st
-from botocore.exceptions import NoCredentialsError, PartialCredentialsError
-from langchain.embeddings.base import Embeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 
 
@@ -41,6 +39,7 @@ S3_REGION = get_config("AWS_S3_REGION", "eu-north-1")
 BUCKET_NAME = get_config("R2_BUCKET_NAME") or get_config("BUCKET_NAME")
 R2_ENDPOINT_URL = normalize_r2_endpoint_url(get_config("R2_ENDPOINT_URL"), BUCKET_NAME)
 STORAGE_PROVIDER = "Cloudflare R2" if R2_ENDPOINT_URL else "Amazon S3"
+HF_EMBEDDING_MODEL_NAME = get_config("HF_EMBEDDING_MODEL_NAME", "sentence-transformers/all-MiniLM-L6-v2")
 
 
 def get_boto3_client(service_name, region_name):
@@ -62,45 +61,15 @@ def get_boto3_client(service_name, region_name):
 
 
 s3_client = get_boto3_client("s3", S3_REGION)
-bedrock_client = get_boto3_client("bedrock-runtime", AWS_REGION)
 
 
-class BedrockEmbeddingWrapper(Embeddings):
-    def __init__(
-            self,
-            client=None,
-            region="us-east-1",
-            model_id="amazon.titan-embed-text-v1"
-    ):
-        if client:
-            self.client = client
-        else:
-            self.client = boto3.client(
-                "bedrock-runtime",
-                region_name=region
-            )
-
-        self.model_id = model_id
-
-    def embed_documents(self, texts):
-        return [self.embed_query(t) for t in texts]
-
-    def embed_query(self, text):
-        body = {
-            "inputText": text
-        }
-
-        response = self.client.invoke_model(
-            modelId=self.model_id,
-            body=json.dumps(body),
-            contentType="application/json",
-            accept="application/json"
-        )
-
-        result = json.loads(response["body"].read())
-        return result["embedding"]
-
-bedrock_embeddings = BedrockEmbeddingWrapper(model_id="amazon.titan-embed-text-v2:0", client=bedrock_client)
+@st.cache_resource(show_spinner="Loading Hugging Face embedding model...")
+def get_embeddings():
+    return HuggingFaceEmbeddings(
+        model_name=HF_EMBEDDING_MODEL_NAME,
+        model_kwargs={"device": "cpu"},
+        encode_kwargs={"normalize_embeddings": True},
+    )
 
 def get_unique_id():
     return str(uuid.uuid4())
@@ -117,7 +86,7 @@ def create_vector_store(request_id, documents):
     if not BUCKET_NAME:
         raise ValueError("BUCKET_NAME is not configured")
 
-    vectorstore_faiss = FAISS.from_documents(documents, bedrock_embeddings)
+    vectorstore_faiss = FAISS.from_documents(documents, get_embeddings())
     file_name = f"{request_id}.bin"
     folder_path = tempfile.gettempdir()
     vectorstore_faiss.save_local(index_name=file_name, folder_path=folder_path)
@@ -170,11 +139,6 @@ def main():
         try:
             create_vector_store(request_id, splitted_docs)
             st.success("PDF processed successfully. You can ask questions below.")
-        except (NoCredentialsError, PartialCredentialsError):
-            st.error(
-                "AWS Bedrock credentials are missing or incomplete. "
-                "Add AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY to Streamlit secrets with Bedrock model access."
-            )
         except Exception as exc:
             st.error(f"Error while creating the vector store: {exc}")
 

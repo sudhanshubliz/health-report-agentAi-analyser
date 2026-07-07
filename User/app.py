@@ -5,30 +5,23 @@ from botocore.exceptions import ClientError
 import streamlit as st
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
-from langchain_community.chat_models import BedrockChat
+from langchain_community.llms import HuggingFaceHub
 from langchain_community.vectorstores import FAISS
 
 import admin
-from admin import BedrockEmbeddingWrapper
 
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-AWS_REGION = admin.get_config("AWS_REGION", "us-east-1")
 S3_REGION = admin.get_config("AWS_S3_REGION", admin.S3_REGION)
 BUCKET_NAME = admin.BUCKET_NAME
 STORAGE_PROVIDER = admin.STORAGE_PROVIDER
-BEDROCK_CHAT_MODEL_ID = admin.get_config(
-    "BEDROCK_CHAT_MODEL_ID",
-    "arn:aws:bedrock:us-east-1:439016989371:inference-profile/us.anthropic.claude-3-5-haiku-20241022-v1:0",
-)
-BEDROCK_EMBEDDING_MODEL_ID = admin.get_config("BEDROCK_EMBEDDING_MODEL_ID", "amazon.titan-embed-text-v2:0")
+HF_API_TOKEN = admin.get_config("HUGGINGFACEHUB_API_TOKEN") or admin.get_config("HF_TOKEN")
+HF_LLM_REPO_ID = admin.get_config("HF_LLM_REPO_ID", "mistralai/Mistral-7B-Instruct-v0.3")
 INDEX_NAME = "my_faiss"
 FOLDER_PATH = tempfile.gettempdir()
 
 s3_client = admin.get_boto3_client("s3", S3_REGION)
-bedrock_client = admin.get_boto3_client("bedrock-runtime", AWS_REGION)
-bedrock_embeddings = BedrockEmbeddingWrapper(model_id=BEDROCK_EMBEDDING_MODEL_ID, client=bedrock_client)
 
 
 def load_index():
@@ -42,11 +35,17 @@ def load_index():
 
 
 def get_llm():
-    return BedrockChat(
-        model_id=BEDROCK_CHAT_MODEL_ID,
-        client=bedrock_client,
-        provider="anthropic",
-        model_kwargs={"max_tokens": 512},
+    if not HF_API_TOKEN:
+        raise ValueError("Hugging Face token is not configured")
+
+    return HuggingFaceHub(
+        repo_id=HF_LLM_REPO_ID,
+        huggingfacehub_api_token=HF_API_TOKEN,
+        model_kwargs={
+            "temperature": 0.1,
+            "max_new_tokens": 512,
+            "return_full_text": False,
+        },
     )
 
 
@@ -102,9 +101,14 @@ def render_question_box(faiss_index):
             return
 
         with st.spinner("🤖 Querying AI... please wait"):
-            llm = get_llm()
-            st.write(get_response(llm, faiss_index, question.strip()))
-            st.success("Answer received ✅")
+            try:
+                llm = get_llm()
+                st.write(get_response(llm, faiss_index, question.strip()))
+                st.success("Answer received ✅")
+            except ValueError as exc:
+                st.error(f"{exc}. Add HUGGINGFACEHUB_API_TOKEN or HF_TOKEN to Streamlit secrets.")
+            except Exception as exc:
+                st.error(f"Error while querying Hugging Face: {exc}")
 
 
 def main():
@@ -130,7 +134,7 @@ def main():
         faiss_index = FAISS.load_local(
             index_name=INDEX_NAME,
             folder_path=FOLDER_PATH,
-            embeddings=bedrock_embeddings,
+            embeddings=admin.get_embeddings(),
             allow_dangerous_deserialization=True,
         )
     except ClientError as exc:
