@@ -1,11 +1,13 @@
 import os
 import tempfile
+from typing import Any, List, Optional
 
 from botocore.exceptions import ClientError
+from huggingface_hub import InferenceClient
 import streamlit as st
 from langchain.chains import RetrievalQA
+from langchain.llms.base import LLM
 from langchain.prompts import PromptTemplate
-from langchain_community.llms import HuggingFaceHub
 from langchain_community.vectorstores import FAISS
 
 import admin
@@ -24,6 +26,33 @@ FOLDER_PATH = tempfile.gettempdir()
 s3_client = admin.get_boto3_client("s3", S3_REGION)
 
 
+class HuggingFaceInferenceLLM(LLM):
+    repo_id: str
+    api_token: str
+    max_new_tokens: int = 512
+    temperature: float = 0.1
+
+    @property
+    def _llm_type(self) -> str:
+        return "huggingface_inference"
+
+    def _call(
+        self,
+        prompt: str,
+        stop: Optional[List[str]] = None,
+        run_manager: Optional[Any] = None,
+        **kwargs: Any,
+    ) -> str:
+        client = InferenceClient(model=self.repo_id, token=self.api_token, timeout=120)
+        return client.text_generation(
+            prompt,
+            max_new_tokens=self.max_new_tokens,
+            temperature=self.temperature,
+            return_full_text=False,
+            stop_sequences=stop,
+        )
+
+
 def load_index():
     if not BUCKET_NAME:
         raise ValueError("BUCKET_NAME is not configured")
@@ -38,15 +67,9 @@ def get_llm():
     if not HF_API_TOKEN:
         raise ValueError("Hugging Face token is not configured")
 
-    return HuggingFaceHub(
+    return HuggingFaceInferenceLLM(
         repo_id=HF_LLM_REPO_ID,
-        task="text-generation",
-        huggingfacehub_api_token=HF_API_TOKEN,
-        model_kwargs={
-            "temperature": 0.1,
-            "max_new_tokens": 512,
-            "return_full_text": False,
-        },
+        api_token=HF_API_TOKEN,
     )
 
 
