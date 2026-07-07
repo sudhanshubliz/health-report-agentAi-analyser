@@ -5,6 +5,7 @@ import uuid
 
 import boto3
 import streamlit as st
+from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 from langchain.embeddings.base import Embeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
@@ -169,6 +170,11 @@ def main():
         try:
             create_vector_store(request_id, splitted_docs)
             st.success("PDF processed successfully. You can ask questions below.")
+        except (NoCredentialsError, PartialCredentialsError):
+            st.error(
+                "AWS Bedrock credentials are missing or incomplete. "
+                "Add AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY to Streamlit secrets with Bedrock model access."
+            )
         except Exception as exc:
             st.error(f"Error while creating the vector store: {exc}")
 
