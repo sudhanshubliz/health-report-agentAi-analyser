@@ -1,13 +1,9 @@
 import os
 import tempfile
-from typing import Any, List, Optional
 
 from botocore.exceptions import ClientError
 from huggingface_hub import InferenceClient
 import streamlit as st
-from langchain.chains import RetrievalQA
-from langchain.llms.base import LLM
-from langchain.prompts import PromptTemplate
 from langchain_community.vectorstores import FAISS
 
 import admin
@@ -19,43 +15,11 @@ S3_REGION = admin.get_config("AWS_S3_REGION", admin.S3_REGION)
 BUCKET_NAME = admin.BUCKET_NAME
 STORAGE_PROVIDER = admin.STORAGE_PROVIDER
 HF_API_TOKEN = admin.get_config("HUGGINGFACEHUB_API_TOKEN") or admin.get_config("HF_TOKEN")
-HF_LLM_REPO_ID = admin.get_config("HF_LLM_REPO_ID", "mistralai/Mistral-7B-Instruct-v0.3")
+HF_QA_MODEL_ID = admin.get_config("HF_QA_MODEL_ID", "deepset/roberta-base-squad2")
 INDEX_NAME = "my_faiss"
 FOLDER_PATH = tempfile.gettempdir()
 
 s3_client = admin.get_boto3_client("s3", S3_REGION)
-
-
-class HuggingFaceInferenceLLM(LLM):
-    repo_id: str
-    api_token: str
-    max_new_tokens: int = 512
-    temperature: float = 0.1
-
-    @property
-    def _llm_type(self) -> str:
-        return "huggingface_inference"
-
-    def _call(
-        self,
-        prompt: str,
-        stop: Optional[List[str]] = None,
-        run_manager: Optional[Any] = None,
-        **kwargs: Any,
-    ) -> str:
-        client = InferenceClient(model=self.repo_id, token=self.api_token, timeout=120)
-        response = client.chat_completion(
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt,
-                }
-            ],
-            max_tokens=self.max_new_tokens,
-            temperature=self.temperature,
-            stop=stop,
-        )
-        return response.choices[0].message.content
 
 
 def load_index():
@@ -68,40 +32,45 @@ def load_index():
     s3_client.download_file(Bucket=BUCKET_NAME, Key=f"{INDEX_NAME}.pkl", Filename=pkl_path)
 
 
-def get_llm():
+def get_hf_client():
     if not HF_API_TOKEN:
         raise ValueError("Hugging Face token is not configured")
 
-    return HuggingFaceInferenceLLM(
-        repo_id=HF_LLM_REPO_ID,
-        api_token=HF_API_TOKEN,
+    return InferenceClient(model=HF_QA_MODEL_ID, token=HF_API_TOKEN, timeout=120)
+
+
+def get_answer_text(answer):
+    if isinstance(answer, list):
+        answer = answer[0] if answer else None
+
+    if answer is None:
+        return ""
+
+    if isinstance(answer, dict):
+        return answer.get("answer", "")
+
+    return getattr(answer, "answer", "")
+
+
+def get_response(vectorstore, question):
+    docs = vectorstore.similarity_search(question, k=5)
+    context = "\n\n".join(doc.page_content for doc in docs).strip()
+    if not context:
+        return "I don't know. I could not find readable report context."
+
+    client = get_hf_client()
+    answer = client.question_answering(
+        question=question,
+        context=context,
+        handle_impossible_answer=True,
+        max_answer_len=120,
     )
+    answer_text = get_answer_text(answer).strip()
 
+    if answer_text:
+        return answer_text
 
-def get_response(llm, vectorstore, question):
-    prompt_template = """
-
-    Human: Please use the given context to provide a concise answer to the question.
-    If you don't know the answer, just say that you don't know. Do not make up an answer.
-    <context>
-    {context}
-    </context>
-
-    Question: {question}
-
-    Assistant:"""
-
-    prompt = PromptTemplate(template=prompt_template, input_variables=["context", "question"])
-
-    qa = RetrievalQA.from_chain_type(
-        llm=llm,
-        chain_type="stuff",
-        retriever=vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": 5}),
-        return_source_documents=True,
-        chain_type_kwargs={"prompt": prompt},
-    )
-    answer = qa.invoke({"query": question})
-    return answer["result"]
+    return "I don't know. The most relevant report context I found was:\n\n" + context[:1200]
 
 
 def render_question_box(faiss_index):
@@ -131,8 +100,7 @@ def render_question_box(faiss_index):
 
         with st.spinner("🤖 Querying AI... please wait"):
             try:
-                llm = get_llm()
-                st.write(get_response(llm, faiss_index, question.strip()))
+                st.write(get_response(faiss_index, question.strip()))
                 st.success("Answer received ✅")
             except ValueError as exc:
                 st.error(f"Hugging Face configuration error: {exc}")

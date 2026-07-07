@@ -20,7 +20,7 @@ It helps users:
 ## Built Using Hugging Face, Langchain, Python, Docker, Cloudflare R2-compatible storage
 ## Models used:
     sentence-transformers/all-MiniLM-L6-v2 - Embeddings
-    mistralai/Mistral-7B-Instruct-v0.3 - Question answering via Hugging Face Inference API
+    deepset/roberta-base-squad2 - Question answering via Hugging Face Inference API
 
 ## Introduction
 We will build a CHATBOT like application with Hugging Face, docker, python, Langchain, and Streamlit. We will use Retrieval-Augmented generation concept to provide context to the Large Language model along with user query to generate response from our Knowledgebase.
@@ -66,7 +66,7 @@ R2_BUCKET_NAME = "<r2-bucket-name>"
 
 HUGGINGFACEHUB_API_TOKEN = "<hugging-face-access-token>"
 HF_EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
-HF_LLM_REPO_ID = "mistralai/Mistral-7B-Instruct-v0.3"
+HF_QA_MODEL_ID = "deepset/roberta-base-squad2"
 ```
 
 If `R2_ENDPOINT_URL` is configured, the app uses Cloudflare R2. If it is not configured, the app falls back to AWS S3 with `BUCKET_NAME` and `AWS_S3_REGION`.
