@@ -44,13 +44,18 @@ class HuggingFaceInferenceLLM(LLM):
         **kwargs: Any,
     ) -> str:
         client = InferenceClient(model=self.repo_id, token=self.api_token, timeout=120)
-        return client.text_generation(
-            prompt,
-            max_new_tokens=self.max_new_tokens,
+        response = client.chat_completion(
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            ],
+            max_tokens=self.max_new_tokens,
             temperature=self.temperature,
-            return_full_text=False,
-            stop_sequences=stop,
+            stop=stop,
         )
+        return response.choices[0].message.content
 
 
 def load_index():
